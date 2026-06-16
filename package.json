@@ -1,0 +1,13 @@
+{
+  "name": "eloquence-camp",
+  "version": "1.0.0",
+  "description": "口才训练营 — 全栈项目仓库",
+  "private": true,
+  "scripts": {
+    "dev:mini": "cd miniapp && npm run dev:mp-weixin",
+    "dev:admin": "cd admin && npm run dev",
+    "dev:server": "cd server && python wsgi.py",
+    "build:mini": "cd miniapp && npm run build:mp-weixin",
+    "build:admin": "cd admin && npm run build"
+  }
+}

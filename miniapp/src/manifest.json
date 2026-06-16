@@ -1,0 +1,32 @@
+{
+  "name": "口才训练营",
+  "appid": "__UNI__XXXXXX",
+  "description": "每日科学练口才，自信表达看得见",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": { "alwaysShowBeforeRender": true, "waiting": true, "autoclose": true, "delay": 0 },
+    "modules": {},
+    "distribute": {
+      "android": { "permissions": ["android.permission.RECORD_AUDIO"] },
+      "ios": {},
+      "sdkConfigs": {}
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": { "urlCheck": false },
+    "usingComponents": true,
+    "permission": {
+      "scope.record": { "desc": "需要使用录音功能进行口才练习" }
+    },
+    "requiredPrivateInfos": ["getLocation", "chooseAddress"],
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "uniStatistics": { "enable": false },
+  "vueVersion": "3"
+}
