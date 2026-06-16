@@ -49,7 +49,9 @@ venv/
 # Uploads & runtime
 uploads/*
 !uploads/.gitkeep
+**/uploads/
 instance/
+*.db
 
 # Testing
 .coverage

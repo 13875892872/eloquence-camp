@@ -28,7 +28,7 @@ const stats=ref({continuous_days:0,total_days:0,total_minutes:0}),tasks=ref([]),
 const dl=k=>({pronunciation:'发音',fluency:'流利度',completeness:'完整度',content:'内容',expressiveness:'表现力'}[k]||k)
 const statsArr=computed(()=>[{l:'连续打卡',v:stats.value.continuous_days},{l:'累计天数',v:stats.value.total_days},{l:'总时长(min)',v:stats.value.total_minutes}])
 async function load(){try{const d=await api.get('/checkin/today');tasks.value=d.tasks||[];Object.assign(stats.value,d.stats||{})}catch(e){};try{const p=await api.get('/user/profile');ability.value=p.ability_score;Object.assign(stats.value,{continuous_days:p.continuous_days,total_days:p.total_days,total_minutes:p.total_practice_minutes})}catch(e){};try{const g=await api.get('/checkin/growth-progress');goals.value=(g.goals||[]).map(g=>({...g,badge:g.badge?.icon||'🎯',progress:g.achieved?100:g.progress||0}))}catch(e){}}
-function startTask(t){if(t.status==='locked')return uni.showToast({title:'请先完成前一个任务',icon:'none'});if(t.status==='completed')return uni.showToast({title:'已完成',icon:'none'});if(t.training_item?.id)uni.navigateTo({url:'/pages/training/detail?id='+t.training_item.id+'&tk='+t.task_index})}
+function startTask(t){if(t.status==='locked')return uni.showToast({title:'请先完成前一个任务',icon:'none'});if(t.status==='completed')return uni.showToast({title:'已完成',icon:'none'});if(t.training_item?.id){uni.navigateTo({url:'/pages/training/detail?id='+t.training_item.id+'&tk='+t.task_index})}else{uni.showToast({title:'请在训练题库中选择题目练习',icon:'none'})}}
 onShow(load)
 </script>
 

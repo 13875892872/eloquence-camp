@@ -55,7 +55,7 @@ async function doLogin() {
 
 function getBaseUrl() {
   // uni-app 开发环境代理或直连
-  return 'http://192.168.43.30:5000/api'
+  return 'http://192.168.1.107:5000/api'
 }
 </script>
 

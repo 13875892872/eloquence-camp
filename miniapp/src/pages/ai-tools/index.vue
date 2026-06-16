@@ -3,7 +3,7 @@
   <view class="qb">今日剩余 <text class="qn">{{quota}}</text> 次</view>
 
   <view class="sg">
-    <view class="sc" v-for="s in scenes" :key="s.value" :class="{on:form.scene_type===s.value}" @click="form.scene_type=s.value">
+    <view class="sc" v-for="s in scenes" :key="s.value" :class="{on:form.scene_type===s.value}" @tap="selectScene(s.value)">
       <text class="sci">{{s.icon}}</text><text class="scl">{{s.label}}</text>
     </view>
   </view>
@@ -32,6 +32,7 @@ const quota=ref(3),gen=ref(false),result=ref(null)
 const scenes=[{icon:'🎤',label:'演讲文案',value:'speech'},{icon:'📱',label:'短视频',value:'short_video'},{icon:'🛒',label:'直播话术',value:'livestream'},{icon:'🌟',label:'开场白',value:'opening'}]
 const durs=['1min','3min','5min','10min'];const sty=['专业正式','轻松幽默','情感共鸣','数据驱动']
 const form=reactive({scene_type:'speech',topic:'',scene_desc:'',duration:'3min',style:'专业正式'})
+function selectScene(v){form.scene_type=v}
 async function lq(){try{const d=await api.get('/ai-text/quota');quota.value=d.remaining||3}catch(e){}}
 async function generate(){if(!form.topic)return uni.showToast({title:'请输入主题',icon:'none'});if(quota.value<=0)return uni.showToast({title:'今日次数已用完',icon:'none'});gen.value=true;try{result.value=await api.post('/ai-text/generate',{...form});quota.value=result.value.remaining_quota||quota.value-1}catch(e){}finally{gen.value=false}}
 function cp(){uni.setClipboardData({data:result.value?.content||'',success:()=>uni.showToast({title:'已复制'})})}
