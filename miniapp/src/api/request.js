@@ -1,7 +1,9 @@
 /**
  * uni.request 封装 — 自动注入Token / 统一错误处理
  */
-const BASE_URL = 'http://192.168.1.107:5000/api'
+// 开发: http://192.168.43.30:5000/api
+// 发布: 替换为 https://api.your-domain.com/api
+const BASE_URL = 'http://192.168.43.30:5000/api'
 const TIMEOUT = 15000
 
 function request(options = {}) {

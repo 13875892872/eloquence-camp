@@ -28,6 +28,19 @@ def get_profile():
     return ok(user.to_dict())
 
 
+@bp.route('/profile/subscribe', methods=['PUT'])
+def update_subscribe():
+    """更新用户订阅状态"""
+    user = _get_user()
+    if not user:
+        return fail(401, '请先登录')
+    data = request.get_json()
+    if 'subscribe_status' in data:
+        user.subscribe_status = bool(data['subscribe_status'])
+        db.session.commit()
+    return ok({'subscribe_status': user.subscribe_status})
+
+
 @bp.route('/favorites', methods=['GET'])
 def list_favorites():
     """获取用户收藏列表"""

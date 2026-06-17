@@ -3,6 +3,7 @@ from app import create_app
 from app.extensions import db
 from app.models.checkin import DailyTaskConfig, GrowthGoalConfig
 from app.models.ai import AiConfig
+from app.models.admin import PushTemplate
 
 app = create_app()
 
@@ -48,6 +49,13 @@ with app.app_context():
     if AiConfig.query.count() == 0:
         db.session.add(AiConfig())
         print('✅ AI配置已初始化（使用默认值）')
+
+    # 推送模板
+    if PushTemplate.query.count() == 0:
+        db.session.add(PushTemplate(type='daily_remind', name='每日练习提醒', push_time='20:00', is_active=True))
+        db.session.add(PushTemplate(type='checkin_success', name='打卡成功通知', push_time='', is_active=True))
+        db.session.add(PushTemplate(type='new_material', name='新素材上线通知', push_time='', is_active=False))
+        print('✅ 推送模板已初始化（3个模板）')
 
     db.session.commit()
     print('🎉 种子数据初始化完成')

@@ -16,6 +16,7 @@ class User(db.Model):
     total_practice_minutes = db.Column(db.Integer, default=0)
     ability_score = db.Column(db.JSON)
     growth_level = db.Column(db.String(20), default='newbie')
+    subscribe_status = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -34,6 +35,7 @@ class User(db.Model):
             'continuous_days': self.continuous_days,
             'total_practice_minutes': self.total_practice_minutes,
             'ability_score': self.ability_score,
+            'subscribe_status': self.subscribe_status,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

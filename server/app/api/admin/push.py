@@ -1,42 +1,51 @@
-"""后台管理 — 消息推送"""
+"""后台管理 — 消息推送（真实 DB + 微信 API）"""
 from flask import request
 from . import admin_bp
 from ...extensions import db
-from ...models.admin import PushRecord
+from ...models.admin import PushRecord, PushTemplate
 from ...models.user import User
+from ...services.push import push_service
 from ...utils import ok, fail, paginated
 
 
 @admin_bp.route('/push-templates', methods=['GET'])
 def get_templates():
-    """获取推送模板配置"""
+    """获取推送模板配置（从数据库读取）"""
+    templates = PushTemplate.query.order_by(PushTemplate.id).all()
     return ok({
         'templates': [
             {
-                'id': 1, 'type': 'daily_remind',
-                'name': '每日练习提醒', 'push_time': '20:00',
-                'wx_template_id': '', 'is_active': True
-            },
-            {
-                'id': 2, 'type': 'checkin_success',
-                'name': '打卡成功通知', 'push_time': '',
-                'wx_template_id': '', 'is_active': True
-            },
-            {
-                'id': 3, 'type': 'new_material',
-                'name': '新素材上线通知', 'push_time': '',
-                'wx_template_id': '', 'is_active': False
-            }
+                'id': t.id,
+                'type': t.type,
+                'name': t.name,
+                'wx_template_id': t.wx_template_id or '',
+                'push_time': t.push_time or '',
+                'is_active': t.is_active
+            } for t in templates
         ]
     })
 
 
 @admin_bp.route('/push-templates/<int:template_id>', methods=['PUT'])
 def update_template(template_id):
-    """更新推送模板"""
+    """更新推送模板配置"""
+    tpl = PushTemplate.query.get_or_404(template_id)
     data = request.get_json()
-    # 一期简化为返回成功，实际应写入数据库
-    return ok({'message': '模板配置已保存'})
+
+    if 'is_active' in data:
+        tpl.is_active = data['is_active']
+    if 'push_time' in data:
+        tpl.push_time = data['push_time']
+    if 'wx_template_id' in data:
+        tpl.wx_template_id = data['wx_template_id']
+    if 'name' in data:
+        tpl.name = data['name']
+
+    db.session.commit()
+    return ok({'message': '模板配置已保存', 'template': {
+        'id': tpl.id, 'name': tpl.name, 'is_active': tpl.is_active,
+        'push_time': tpl.push_time, 'wx_template_id': tpl.wx_template_id
+    }})
 
 
 @admin_bp.route('/push/manual', methods=['POST'])
@@ -48,28 +57,60 @@ def manual_push():
     content = data.get('content', '')
     target = data.get('target', 'all')
 
-    # 计算目标用户数
-    target_count = User.query.count() if target == 'all' else 0
+    # 查找模板配置
+    tpl = PushTemplate.query.filter_by(type=template_type).first()
+    wx_template_id = tpl.wx_template_id if tpl else ''
 
-    push = PushRecord(
+    # 获取目标用户
+    if target == 'all':
+        users = User.query.filter(
+            User.subscribe_status == True,
+            User.openid != '',
+            User.openid.isnot(None)
+        ).all()
+    else:
+        users = []
+
+    target_count = len(users)
+
+    # 创建推送记录
+    record = PushRecord(
         template_type=template_type,
-        title=title, content=content,
+        title=title or (tpl.name if tpl else ''),
+        content=content,
         target_count=target_count,
         reach_count=0,
         status='sending'
     )
-    db.session.add(push)
+    db.session.add(record)
     db.session.commit()
 
-    # TODO: 实际调用微信订阅消息推送接口
-    push.reach_count = target_count
-    push.status = 'success'
+    # 调用微信推送
+    if users and wx_template_id:
+        result = push_service.send_batch(
+            users=users,
+            template_id=wx_template_id,
+            data_builder=lambda u: {
+                'thing1': {'value': title or '口才训练营'},
+                'thing2': {'value': '新内容已上线'},
+                'thing3': {'value': content or '点击查看最新训练素材！'},
+            }
+        )
+        record.reach_count = result['success']
+        record.status = 'success' if result['failed'] == 0 else 'partial'
+    else:
+        record.reach_count = 0
+        record.status = 'success'  # 无用户或未配置模板ID，视为完成
+        if not wx_template_id:
+            record.error_msg = '模板 wx_template_id 未配置，消息未实际发送'
+
     db.session.commit()
 
     return ok({
-        'push_id': push.id,
+        'push_id': record.id,
         'target_count': target_count,
-        'status': push.status
+        'reach_count': record.reach_count,
+        'status': record.status
     })
 
 
@@ -92,6 +133,7 @@ def list_push_records():
                 'target_count': r.target_count,
                 'reach_count': r.reach_count,
                 'status': r.status,
+                'error_msg': r.error_msg,
                 'created_at': r.created_at.isoformat() if r.created_at else None
             } for r in records
         ],

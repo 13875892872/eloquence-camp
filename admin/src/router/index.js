@@ -69,8 +69,28 @@ const routes = [
       {
         path: 'settings',
         name: 'Settings',
-        component: () => import('@/views/settings/index.vue'),
-        meta: { title: '系统设置', icon: 'Setting' }
+        redirect: '/settings/password',
+        meta: { title: '系统设置', icon: 'Setting' },
+        children: [
+          {
+            path: 'password',
+            name: 'SettingsPassword',
+            component: () => import('@/views/settings/password.vue'),
+            meta: { title: '修改密码' }
+          },
+          {
+            path: 'storage',
+            name: 'SettingsStorage',
+            component: () => import('@/views/settings/storage.vue'),
+            meta: { title: '存储管理' }
+          },
+          {
+            path: 'logs',
+            name: 'SettingsLogs',
+            component: () => import('@/views/settings/logs.vue'),
+            meta: { title: '操作日志' }
+          }
+        ]
       }
     ]
   }

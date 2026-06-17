@@ -11,4 +11,4 @@ from .training import TrainingItem
 from .common import PracticeRecord, UserFavorite, RecommendConfig
 from .checkin import CheckinRecord, DailyTaskConfig, GrowthGoalConfig
 from .ai import AiTextRecord, AiConfig
-from .admin import AdminUser, OperationLog, PushRecord
+from .admin import AdminUser, OperationLog, PushRecord, PushTemplate

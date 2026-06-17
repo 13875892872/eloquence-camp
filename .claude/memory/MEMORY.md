@@ -1,0 +1,3 @@
+- [用户偏好](user-preferences.md) — 工作习惯、技术偏好、项目目标
+- [踩坑记录](gotchas-discovered.md) — dashscope版本、60sAPI、uni-app、CORS等陷阱
+- [架构决策](architecture-decisions.md) — 5条关键ADR记录

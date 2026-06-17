@@ -18,7 +18,7 @@
   </view>
 
   <view class="mc mt">
-    <view class="mi"><text>🔔 消息提醒</text><switch :checked="remind" @change="remind=$event.detail.value" color="#FF6B35" style="flex-shrink:0"/></view>
+    <view class="mi"><text>🔔 消息提醒</text><switch :checked="remind" @change="onRemindChange" color="#FF6B35" style="flex-shrink:0"/></view>
     <view class="mi" @click="cc"><text>🗑 清除缓存</text><text class="ma">→</text></view>
     <view class="mi"><text>ℹ️ 关于我们</text><text class="ma">→</text></view>
   </view>
@@ -30,7 +30,22 @@ import {ref} from 'vue';import {onShow} from '@dcloudio/uni-app';import api from
 const user=ref({}),remind=ref(true)
 const lv=v=>({newbie:'新人',beginner:'入门',advanced:'进阶',expert:'达人',master:'大师'}[v]||'新人')
 const nav=p=>uni.navigateTo({url:'/pages/profile/'+p})
-async function load(){try{user.value=await api.get('/user/profile')}catch(e){}}
+async function load(){
+  try{const d=await api.get('/user/profile');user.value=d;remind.value=!!d.subscribe_status}catch(e){}
+}
+async function onRemindChange(e){
+  const val=e.detail.value
+  if(val){
+    // 请求微信订阅授权
+    try{
+      await uni.requestSubscribeMessage({tmplIds:[]})
+    }catch(e){}
+  }
+  remind.value=val
+  try{await api.put('/user/profile/subscribe',{subscribe_status:val})}catch(e){
+    remind.value=!val;uni.showToast({title:'设置失败',icon:'none'})
+  }
+}
 function cc(){uni.showToast({title:'缓存已清除',icon:'success'})}
 onShow(load)
 </script>

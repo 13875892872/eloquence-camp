@@ -9,6 +9,19 @@
     </el-col>
   </el-row>
 
+  <!-- 快捷操作 -->
+  <el-row :gutter="12" class="quick-row">
+    <el-col :span="6" v-for="q in quicks" :key="q.path">
+      <div class="quick-card" @click="$router.push(q.path)">
+        <span class="quick-icon">{{ q.icon }}</span>
+        <div class="quick-info">
+          <span class="quick-label">{{ q.label }}</span>
+          <span class="quick-desc">{{ q.desc }}</span>
+        </div>
+      </div>
+    </el-col>
+  </el-row>
+
   <el-card class="mt16" shadow="never">
     <template #header>
       <div class="card-hd"><span>数据趋势</span>
@@ -37,6 +50,13 @@ import request from '@/api/request'
 const period=ref(30),cards=ref([]),tc=ref(null),rc=ref(null)
 const ai=reactive({today_text:0,today_speech:0,today_users:0})
 let tInst=null,rInst=null
+
+const quicks = [
+  { icon: '📝', label: '训练题库', desc: '管理训练素材', path: '/training' },
+  { icon: '👥', label: '用户管理', desc: '查看用户数据', path: '/users' },
+  { icon: '⭐', label: '推荐配置', desc: '设置首页推荐', path: '/training/recommend' },
+  { icon: '🤖', label: 'AI 配置', desc: '调整模型参数', path: '/ai' }
+]
 
 // 默认数据
 const defaults={
@@ -91,6 +111,7 @@ onMounted(load)
 
 <style scoped>
 .db{padding:0}.stat-row{margin-bottom:16px}.stat-card{cursor:pointer;text-align:center;border-radius:10px}.stat-v{font-size:36px;font-weight:bold;margin-bottom:4px}.stat-l{font-size:13px;color:#999}
+.quick-row{margin-bottom:16px}.quick-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;padding:16px 20px;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.06)}.quick-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1)}.quick-icon{font-size:28px;flex-shrink:0}.quick-info{display:flex;flex-direction:column}.quick-label{font-size:14px;font-weight:600;color:#333}.quick-desc{font-size:12px;color:#999;margin-top:2px}
 .mt16{margin-top:16px}.card-hd{display:flex;justify-content:space-between;align-items:center;font-weight:600}
 .ai-row{display:flex;justify-content:space-around;padding:30px 0}.ai-item{text-align:center}.ai-n{font-size:40px;font-weight:bold;color:#FF6B35;display:block}.ai-l{font-size:13px;color:#999;margin-top:6px;display:block}
 </style>

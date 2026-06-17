@@ -35,3 +35,15 @@ class PushRecord(db.Model):
     status = db.Column(db.String(20), default='sending')
     error_msg = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class PushTemplate(db.Model):
+    __tablename__ = 'push_templates'
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(30), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    wx_template_id = db.Column(db.String(64), default='')
+    push_time = db.Column(db.String(5), default='')
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -53,6 +53,11 @@ uploads/*
 instance/
 *.db
 
+# Scheduler
+server/scheduler/cache/
+server/scheduler/logs/
+server/scheduler/config.json
+
 # Testing
 .coverage
 htmlcov/

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="口才训练营系统架构图">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="2" value="口才训练营 - 系统架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="360" y="10" width="480" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Layer 1: Client ===== -->
+        <mxCell id="10" value="客户端层" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;fontColor=#333333;swimlaneFillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="1080" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="微信小程序&#xa;uni-app · 用户端" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f0ff;strokeColor=#6c8ebf;fontSize=13;fontColor=#333333;" vertex="1" parent="10">
+          <mxGeometry x="180" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="后台管理面板&#xa;Vue3 + Element Plus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f0ff;strokeColor=#6c8ebf;fontSize=13;fontColor=#333333;" vertex="1" parent="10">
+          <mxGeometry x="700" y="40" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Layer 2: Gateway ===== -->
+        <mxCell id="20" value="网关层" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=14;fontStyle=1;fontColor=#333333;swimlaneFillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="1080" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="Nginx / API Gateway&#xa;路由转发 · CORS · 限流" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#d79b00;fontSize=13;fontColor=#333333;" vertex="1" parent="20">
+          <mxGeometry x="380" y="38" width="320" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Layer 3: Application ===== -->
+        <mxCell id="30" value="应用层 — Flask 后端 API" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;fontColor=#333333;swimlaneFillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="340" width="1080" height="270" as="geometry" />
+        </mxCell>
+        <!-- Row 1 -->
+        <mxCell id="32" value="认证模块&#xa;JWT · 微信登录" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="80" y="50" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="训练模块&#xa;课程 · 素材管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="280" y="50" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="34" value="打卡模块&#xa;每日任务 · 成长体系" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="480" y="50" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="35" value="AI文本生成&#xa;Qwen 脚本生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="680" y="50" width="170" height="60" as="geometry" />
+        </mxCell>
+        <!-- Row 2 -->
+        <mxCell id="36" value="AI语音评测&#xa;发音评分 · 反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="80" y="150" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="37" value="用户管理&#xa;个人信息 · 配额" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="280" y="150" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="38" value="上传模块&#xa;文件上传 · OSS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="480" y="150" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="39" value="推送模块&#xa;微信订阅消息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontColor=#333333;" vertex="1" parent="30">
+          <mxGeometry x="680" y="150" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Layer 4: AI Services ===== -->
+        <mxCell id="40" value="AI 服务层" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;fontColor=#333333;swimlaneFillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="1080" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="42" value="通义千问 (Qwen)&#xa;DashScope · 文本生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9673a6;fontSize=12;fontColor=#333333;" vertex="1" parent="40">
+          <mxGeometry x="130" y="42" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="43" value="阿里云语音评测&#xa;发音评估 · 纠错反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9673a6;fontSize=12;fontColor=#333333;" vertex="1" parent="40">
+          <mxGeometry x="430" y="42" width="220" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="44" value="阿里云 OSS&#xa;对象存储 · 音频文件" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9673a6;fontSize=12;fontColor=#333333;" vertex="1" parent="40">
+          <mxGeometry x="730" y="42" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Layer 5: Data ===== -->
+        <mxCell id="50" value="数据层" style="swimlane;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontStyle=1;fontColor=#333333;swimlaneFillColor=#f5f5f5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="770" width="1080" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="52" value="SQLite (开发) / MySQL (生产)&#xa;用户 · 训练 · 打卡 · 配置" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=12;fontColor=#333333;" vertex="1" parent="50">
+          <mxGeometry x="240" y="35" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="Redis Cache&#xa;会话缓存 · 限流" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=12;fontColor=#333333;" vertex="1" parent="50">
+          <mxGeometry x="660" y="35" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Edges ===== -->
+
+        <!-- Client → Gateway -->
+        <mxCell id="100" value="HTTP/HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="12" target="22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="101" value="HTTP/HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="13" target="22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Gateway → Application (representative) -->
+        <mxCell id="102" value="路由分发" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#d79b00;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="22" target="32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="103" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#d79b00;" edge="1" parent="1" source="22" target="35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Application → AI Services -->
+        <mxCell id="104" value="API调用" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#9673a6;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="35" target="42">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="105" value="API调用" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#9673a6;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="36" target="43">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="106" value="文件上传" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#9673a6;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="38" target="44">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Application → Data -->
+        <mxCell id="107" value="数据读写" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#82b366;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="32" target="52">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="165" y="655" />
+              <mxPoint x="345" y="655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="108" value="数据读写" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#82b366;fontColor=#666666;fontSize=11;" edge="1" parent="1" source="37" target="52">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="365" y="655" />
+              <mxPoint x="525" y="655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="200" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#cccccc;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="910" width="1080" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="201" value="▲ 客户端层 &nbsp;&nbsp;|&nbsp;&nbsp; ▲ 网关层 &nbsp;&nbsp;|&nbsp;&nbsp; ▲ 应用层 &nbsp;&nbsp;|&nbsp;&nbsp; ▲ AI服务层 &nbsp;&nbsp;|&nbsp;&nbsp; ▲ 数据层 &nbsp;&nbsp;|&nbsp;&nbsp; — 请求流向 &nbsp;&nbsp;|&nbsp;&nbsp; ← 数据读写" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="70" y="915" width="1060" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
