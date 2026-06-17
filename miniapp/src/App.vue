@@ -54,10 +54,12 @@ async function doLogin() {
 }
 
 function getBaseUrl() {
-  // uni-app 开发环境代理或直连
-  // 开发: http://192.168.43.30:5000/api
-	  // 发布: 替换为 https://api.your-domain.com/api
-	  return 'http://192.168.43.30:5000/api'
+  // #ifdef MP-WEIXIN
+  return 'http://192.168.1.107:5000/api'
+  // #endif
+  // #ifndef MP-WEIXIN
+  return 'https://api.your-domain.com/api'
+  // #endif
 }
 </script>
 

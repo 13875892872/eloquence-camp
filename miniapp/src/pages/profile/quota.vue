@@ -21,7 +21,7 @@ onShow(load)
 
 <style scoped>
 .stc{text-align:center;padding:36rpx;margin-bottom:24rpx;width:100%}.sqn{font-size:72rpx;font-weight:bold;color:#FF6B35;display:block}.sql{font-size:24rpx;color:#999;margin-top:6rpx;display:block}
-.card{background:#fff;border-radius:20rpx;padding:24rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.card{background:var(--bg-card);border-radius:20rpx;padding:24rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .st2{font-size:30rpx;font-weight:bold;display:block;margin-bottom:14rpx}
-.ir{display:flex;justify-content:space-between;padding:16rpx 0;border-bottom:1rpx solid #f5f5f5;font-size:26rpx;width:100%}
+.ir{display:flex;justify-content:space-between;padding:16rpx 0;border-bottom:1rpx solid var(--border-light);font-size:26rpx;width:100%}
 </style>

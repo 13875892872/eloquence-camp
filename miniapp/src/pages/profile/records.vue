@@ -18,6 +18,6 @@ onShow(load)
 </script>
 
 <style scoped>
-.item{background:#fff;border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.item{background:var(--bg-card);border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .it{font-size:28rpx;font-weight:bold;display:block}.im2{display:flex;gap:12rpx;margin-top:10rpx;flex-wrap:wrap;width:100%}.sc{font-size:22rpx;color:#FF6B35}.dr{font-size:22rpx;color:#666}.tm{font-size:20rpx;color:#999;margin-left:auto}
 </style>

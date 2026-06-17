@@ -9,8 +9,16 @@
       "style": { "navigationBarTitleText": "每日打卡" }
     },
     {
+      "path": "pages/checkin/calendar",
+      "style": { "navigationBarTitleText": "打卡日历" }
+    },
+    {
       "path": "pages/training/index",
       "style": { "navigationBarTitleText": "训练题库" }
+    },
+    {
+      "path": "pages/training/leaderboard",
+      "style": { "navigationBarTitleText": "训练排行榜" }
     },
     {
       "path": "pages/training/detail",
@@ -45,7 +53,8 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "口才训练营",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "backgroundColor": "#F5F5F5"
+    "backgroundColor": "#F5F5F5",
+    "darkmode": true
   },
   "tabBar": {
     "color": "#999999",

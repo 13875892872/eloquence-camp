@@ -135,3 +135,26 @@ def list_practices():
         items.append(d)
 
     return paginated(items, {'page': page, 'page_size': page_size, 'total': total})
+
+@bp.route('/leaderboard', methods=['GET'])
+def leaderboard():
+    """训练排行榜"""
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    user = None
+    try: user = _get_user()
+    except: pass
+
+    query = User.query.filter(User.total_days > 0).order_by(User.continuous_days.desc(), User.total_practice_minutes.desc())
+    total = query.count()
+    users = query.offset((page - 1) * page_size).limit(page_size).all()
+
+    my_rank = None; my_data = None
+    if user and user.total_days > 0:
+        rank_q = User.query.filter(db.or_(User.continuous_days > user.continuous_days, db.and_(User.continuous_days == user.continuous_days, User.total_practice_minutes > user.total_practice_minutes))).count()
+        my_rank = rank_q + 1
+        my_data = {"nickname": user.nickname or "微信用户", "avatar_url": user.avatar_url, "continuous_days": user.continuous_days, "total_days": user.total_days, "total_practice_minutes": user.total_practice_minutes, "growth_level": user.growth_level}
+
+    items = [{"rank": (page-1)*page_size+idx+1, "nickname": u.nickname or "微信用户", "avatar_url": u.avatar_url, "continuous_days": u.continuous_days, "total_days": u.total_days, "total_practice_minutes": u.total_practice_minutes, "growth_level": u.growth_level} for idx, u in enumerate(users)]
+
+    return ok({"items": items, "pagination": {"page": page, "page_size": page_size, "total": total}, "my_rank": my_rank, "my_data": my_data})

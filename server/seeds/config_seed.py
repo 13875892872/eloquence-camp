@@ -1,4 +1,5 @@
 """初始化打卡/AI配置默认值"""
+import os
 from app import create_app
 from app.extensions import db
 from app.models.checkin import DailyTaskConfig, GrowthGoalConfig
@@ -50,12 +51,31 @@ with app.app_context():
         db.session.add(AiConfig())
         print('✅ AI配置已初始化（使用默认值）')
 
-    # 推送模板
+    # 推送模板 — 支持从环境变量读取微信模板ID
     if PushTemplate.query.count() == 0:
-        db.session.add(PushTemplate(type='daily_remind', name='每日练习提醒', push_time='20:00', is_active=True))
-        db.session.add(PushTemplate(type='checkin_success', name='打卡成功通知', push_time='', is_active=True))
-        db.session.add(PushTemplate(type='new_material', name='新素材上线通知', push_time='', is_active=False))
+        db.session.add(PushTemplate(type='daily_remind', name='每日练习提醒',
+            wx_template_id=os.environ.get('WX_TMPL_DAILY_REMIND', ''),
+            push_time='20:00', is_active=True))
+        db.session.add(PushTemplate(type='checkin_success', name='打卡成功通知',
+            wx_template_id=os.environ.get('WX_TMPL_CHECKIN_SUCCESS', ''),
+            push_time='', is_active=True))
+        db.session.add(PushTemplate(type='new_material', name='新素材上线通知',
+            wx_template_id=os.environ.get('WX_TMPL_NEW_MATERIAL', ''),
+            push_time='', is_active=False))
         print('✅ 推送模板已初始化（3个模板）')
+    else:
+        # 更新已有模板的 wx_template_id（从环境变量读取）
+        tmpl_updates = {
+            'daily_remind': os.environ.get('WX_TMPL_DAILY_REMIND', ''),
+            'checkin_success': os.environ.get('WX_TMPL_CHECKIN_SUCCESS', ''),
+            'new_material': os.environ.get('WX_TMPL_NEW_MATERIAL', ''),
+        }
+        for tpl_type, wx_id in tmpl_updates.items():
+            if wx_id:
+                tpl = PushTemplate.query.filter_by(type=tpl_type).first()
+                if tpl and not tpl.wx_template_id:
+                    tpl.wx_template_id = wx_id
+                    print(f'✅ 推送模板 {tpl_type} wx_template_id 已更新')
 
     db.session.commit()
     print('🎉 种子数据初始化完成')

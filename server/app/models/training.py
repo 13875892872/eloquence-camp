@@ -15,6 +15,7 @@ class TrainingItem(db.Model):
     sample_audio_url = db.Column(db.String(512))
     tags = db.Column(db.JSON)
     status = db.Column(db.String(20), default='online')
+    source = db.Column(db.String(20), default='manual')  # 'manual' | 'ai_generated'
     practice_count = db.Column(db.Integer, default=0)
     sort_order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -32,5 +33,7 @@ class TrainingItem(db.Model):
             'tags': self.tags,
             'practice_count': self.practice_count,
             'sort_order': self.sort_order,
-            'status': self.status
+            'status': self.status,
+            'source': self.source or 'manual',
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }

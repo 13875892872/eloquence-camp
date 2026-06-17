@@ -20,6 +20,6 @@ onShow(load)
 </script>
 
 <style scoped>
-.item{background:#fff;border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.item{background:var(--bg-card);border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .it{font-size:28rpx;font-weight:bold;display:block}.im2{display:flex;justify-content:space-between;margin-top:10rpx;width:100%}.is{font-size:20rpx;color:#FF6B35}.id{font-size:20rpx;color:#999}
 </style>

@@ -2,9 +2,9 @@
 文件上传模块 — 音频上传
 """
 import os
-from flask import Blueprint, request, send_file, current_app
+from flask import Blueprint, request, send_file, redirect, current_app
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-from ..services.oss_client import save_audio, UPLOAD_DIR
+from ..services.oss_client import save_audio, UPLOAD_DIR, is_oss_url
 from ..utils import ok, fail
 
 bp = Blueprint('upload', __name__)
@@ -44,10 +44,14 @@ def upload_audio():
     if size > max_size:
         return fail(400, f'文件过大，最大支持 {max_size // 1024 // 1024}MB')
 
-    # 保存文件，返回相对路径如 audio/202606/xxx.mp3
+    # 保存文件，返回相对路径如 audio/202606/xxx.mp3 或 OSS URL
     relative_path = save_audio(file)
-    # 拼接完整API路径
-    audio_url = f'/api/upload/{relative_path}'
+    # 拼接完整路径（OSS URL 直接使用，本地路径拼接 API 前缀）
+    if relative_path.startswith('https://'):
+        audio_url = relative_path
+    else:
+        audio_url = f'/api/upload/{relative_path}'
+
     return ok({
         'audio_url': audio_url,
         'file_size': size,
@@ -57,7 +61,7 @@ def upload_audio():
 
 @bp.route('/audio/<path:filename>', methods=['GET'])
 def serve_audio(filename):
-    """提供音频文件访问（开发环境）"""
+    """提供音频文件访问（开发环境本地，生产环境 OSS 重定向）"""
     # 安全检查：防止路径遍历
     safe_path = os.path.normpath(filename).lstrip(os.sep)
     full_path = os.path.join(UPLOAD_DIR, 'audio', safe_path)

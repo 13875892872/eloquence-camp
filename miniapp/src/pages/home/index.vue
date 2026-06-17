@@ -13,6 +13,13 @@
     </view>
   </view>
 
+  <!-- 每日一句 -->
+  <view class="card quote-card" v-if="dailyQuote">
+    <text class="st">💬 每日一句</text>
+    <text class="qd ellipsis-2">{{dailyQuote.content}}</text>
+    <text class="qs" v-if="dailyQuote.source">— {{dailyQuote.source}}</text>
+  </view>
+
   <view class="card newbie" v-if="user.growth_level==='newbie'">
     <text class="st">🆕 7天口才入门</text><text class="sd">每天10分钟，告别当众紧张</text>
     <view class="btn-sm" @click="goCat('basic')">开始入门 →</view>
@@ -26,10 +33,19 @@
 
 <script setup>
 import {ref,computed} from 'vue';import {onShow} from '@dcloudio/uni-app';import api from '@/api/request'
-const user=ref({continuous_days:0,growth_level:'newbie'}),pendingCount=ref(3),isChecked=ref(false),hots=ref([])
+const user=ref({continuous_days:0,growth_level:'newbie'}),pendingCount=ref(3),isChecked=ref(false),hots=ref([]),dailyQuote=ref(null)
 const greeting=computed(()=>{const h=new Date().getHours();return h<12?'早上好 ☀️':h<18?'下午好 🌤':'晚上好 🌙'})
 const funcs=[{icon:'🎤',label:'基础口才',cat:'basic'},{icon:'🎯',label:'演讲实战',cat:'speech'},{icon:'🎬',label:'直播话术',cat:'livestream'},{icon:'⚡',label:'即兴表达',cat:'improv'}]
-async function load(){try{const d=await api.get('/checkin/today');pendingCount.value=d.tasks?.filter(t=>t.status!=='completed').length||3;isChecked.value=d.all_completed;Object.assign(user.value,d.stats||{})}catch(e){};try{const r=await api.get('/training/items',{page_size:3});hots.value=r.items||[]}catch(e){}}
+async function load(){
+  try{
+    const d=await api.get('/checkin/today')
+    pendingCount.value=d.tasks?.filter(t=>t.status!=='completed').length||3
+    isChecked.value=d.all_completed
+    Object.assign(user.value,d.stats||{})
+    dailyQuote.value=d.daily_quote||null
+  }catch(e){}
+  try{const r=await api.get('/training/items',{page_size:3});hots.value=r.items||[]}catch(e){}
+}
 function goCheckin(){uni.switchTab({url:'/pages/checkin/index'})}
 function goCat(cat){uni.setStorageSync('training_cat',cat);uni.switchTab({url:'/pages/training/index'})}
 function goDetail(it){uni.navigateTo({url:'/pages/training/detail?id='+it.id})}
@@ -46,6 +62,9 @@ onShow(load)
 .g4-ico{font-size:48rpx;display:block;margin-bottom:8rpx}.g4-lbl{font-size:26rpx;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .card{background:#fff;border-radius:24rpx;padding:28rpx;margin-bottom:20rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .st{font-size:32rpx;font-weight:bold;display:block;margin-bottom:14rpx}
+.quote-card{background:#FFF8F5}
+.qd{font-size:28rpx;color:#666;line-height:1.8;display:block;margin-top:8rpx}
+.qs{font-size:22rpx;color:#999;display:block;margin-top:8rpx;text-align:right}
 .newbie{background:#FFF8F5}.sd{font-size:24rpx;color:#666;display:block;margin-bottom:14rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-sm{display:inline-block;background:#FF6B35;color:#fff;border-radius:16rpx;padding:10rpx 28rpx;font-size:24rpx}
 .hot-i{display:flex;justify-content:space-between;align-items:center;padding:18rpx 0;border-bottom:1rpx solid #f0f0f0;width:100%}

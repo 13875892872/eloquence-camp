@@ -17,6 +17,7 @@ def list_training_items():
     category = request.args.get('category')
     difficulty = request.args.get('difficulty', type=int)
     status = request.args.get('status')
+    source = request.args.get('source')
     keyword = request.args.get('keyword', '').strip()
 
     query = TrainingItem.query
@@ -24,6 +25,8 @@ def list_training_items():
         query = query.filter_by(category=category)
     if difficulty:
         query = query.filter_by(difficulty=difficulty)
+    if source:
+        query = query.filter_by(source=source)
     if status:
         query = query.filter_by(status=status)
     if keyword:
@@ -62,7 +65,8 @@ def create_training_item():
         sample_text=data['sample_text'].strip(),
         tags=data.get('tags', []),
         sort_order=data.get('sort_order', 0),
-        status=data.get('status', 'online')
+        status=data.get('status', 'online'),
+            source=data.get('source', 'manual')
     )
     db.session.add(item)
     db.session.commit()
@@ -82,6 +86,7 @@ def update_training_item(item_id):
     if 'sample_text' in data: item.sample_text = data['sample_text'].strip()
     if 'tags' in data: item.tags = data['tags']
     if 'sort_order' in data: item.sort_order = data['sort_order']
+    if 'source' in data: item.source = data['source']
     if 'status' in data: item.status = data['status']
 
     db.session.commit()

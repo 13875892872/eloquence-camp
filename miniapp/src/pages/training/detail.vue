@@ -3,7 +3,10 @@
   <view v-if="!item" class="loading">加载中...</view>
   <template v-else>
     <view class="dc">
-      <text class="dt ellipsis">{{item.title}}</text>
+      <view class="dc-header">
+        <text class="dt ellipsis">{{item.title}}</text>
+        <text class="fav-icon" :class="{faved:isFavorited}" @tap.stop="toggleFav">{{isFavorited ? '⭐' : '☆'}}</text>
+      </view>
       <text class="dm ellipsis">{{cl(item.category)}} · {{'⭐'.repeat(item.difficulty)}} · {{item.practice_count||0}}人练过</text>
       <view class="dtx"><text>{{item.sample_text}}</text></view>
       <view class="ab" @tap="playSample">
@@ -56,7 +59,7 @@
 import {ref,reactive} from 'vue';import {onLoad,onUnload} from '@dcloudio/uni-app';import api,{BASE_API} from '@/api/request'
 
 const item=ref(null),playing=ref(false),recording=ref(false),uploading=ref(false),timer=ref(0),result=ref(null),uploadProgress=ref(0)
-const waveHeights=reactive([20,30,40,50,40,30])
+const waveHeights=reactive([20,30,40,50,40,30]),isFavorited=ref(false)
 let ti=null,wi=null,recorderManager=null,audioContext=null
 
 const cl=v=>({basic:'基础口才',speech:'演讲实战',livestream:'直播话术',improv:'即兴表达'}[v]||v)
@@ -64,6 +67,24 @@ const dl=k=>({pronunciation:'发音',fluency:'流利度',completeness:'完整度
 const formatTime=s=>{const m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec}
 
 const sampleStatus=ref('▶ 播放范本')
+
+// ========== 收藏功能 ==========
+async function checkFav(){
+  if(!item.value?.id) return
+  try{
+    const d=await api.get('/user/favorites',{item_type:'training_item'})
+    isFavorited.value=(d.items||[]).some(f=>f.item_id===item.value.id)
+  }catch(e){}
+}
+
+async function toggleFav(){
+  if(!item.value?.id) return
+  try{
+    const d=await api.post('/user/favorites/toggle',{item_type:'training_item',item_id:item.value.id})
+    isFavorited.value=d.is_favorited
+    uni.showToast({title:d.message,icon:'none'})
+  }catch(e){uni.showToast({title:'操作失败',icon:'none'})}
+}
 
 // ========== 录音管理 ==========
 function initRecorder(){
@@ -286,6 +307,7 @@ onLoad(async opt=>{
   initAudio()
   if(opt?.id){
     try{item.value=await api.get('/training/items/'+opt.id)}catch(e){}
+    checkFav()
   }
 })
 
@@ -303,9 +325,13 @@ onUnload(()=>{
 </script>
 
 <style scoped>
-.dc{background:#fff;border-radius:20rpx;padding:24rpx;margin-bottom:20rpx;width:100%;box-sizing:border-box;overflow:hidden}
-.dt{font-size:34rpx;font-weight:bold;display:block}.dm{font-size:22rpx;color:#999;display:block;margin:8rpx 0}
-.dtx{background:#fafafa;border-radius:16rpx;padding:20rpx;margin-top:14rpx;font-size:26rpx;line-height:1.7;word-break:break-all;max-height:400rpx;overflow-y:auto;width:100%;box-sizing:border-box}
+.dc{background:var(--bg-card);border-radius:20rpx;padding:24rpx;margin-bottom:20rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.dc-header{display:flex;justify-content:space-between;align-items:flex-start;width:100%}
+.dt{font-size:34rpx;font-weight:bold;display:block;flex:1;min-width:0}
+.fav-icon{font-size:40rpx;flex-shrink:0;margin-left:16rpx;color:#ccc}
+.fav-icon.faved{color:#FAAD14}
+.dm{font-size:22rpx;color:#999;display:block;margin:8rpx 0}
+.dtx{background:var(--bg-secondary);border-radius:16rpx;padding:20rpx;margin-top:14rpx;font-size:26rpx;line-height:1.7;word-break:break-all;max-height:400rpx;overflow-y:auto;width:100%;box-sizing:border-box}
 .ab{background:#FFF0E8;border-radius:14rpx;padding:16rpx;text-align:center;margin-top:14rpx;color:#FF6B35;font-size:26rpx;width:100%;box-sizing:border-box}
 .ab:active{background:#FFE4D6}
 .rc{text-align:center;padding:30rpx 0}.rh{font-size:26rpx;color:#999}
@@ -315,10 +341,10 @@ onUnload(()=>{
 .rtip{font-size:22rpx;color:#999;display:block;margin-top:10rpx}
 .up-bar{width:300rpx;height:8rpx;background:#f0f0f0;border-radius:4rpx;margin:16rpx auto 0;overflow:hidden}
 .up-fill{height:100%;background:#FF6B35;border-radius:4rpx;transition:width .3s}
-.ra{background:#fff;border-radius:20rpx;padding:24rpx;margin-bottom:20rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.ra{background:var(--bg-card);border-radius:20rpx;padding:24rpx;margin-bottom:20rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .rsc{font-size:36rpx;font-weight:bold;color:#FF6B35;text-align:center;display:block}
 .rd{margin:20rpx 0}.rdl{display:flex;align-items:center;margin:6rpx 0}.rdn{width:100rpx;font-size:22rpx;color:#666;flex-shrink:0}.rdb{flex:1;height:8rpx;background:#f0f0f0;border-radius:4rpx;overflow:hidden;min-width:0;margin:0 8rpx}.rdf{height:100%;background:#FF6B35;border-radius:4rpx;transition:width .5s}.rdv{width:45rpx;text-align:right;font-size:22rpx;font-weight:bold;color:#FF6B35;flex-shrink:0}
-.rfb{font-size:24rpx;color:#666;background:#fafafa;border-radius:14rpx;padding:20rpx;margin-top:14rpx;line-height:1.7;word-break:break-all;display:block;width:100%;box-sizing:border-box}
+.rfb{font-size:24rpx;color:#666;background:var(--bg-secondary);border-radius:14rpx;padding:20rpx;margin-top:14rpx;line-height:1.7;word-break:break-all;display:block;width:100%;box-sizing:border-box}
 .rbtn{width:220rpx;height:220rpx;border-radius:50%;background:#FF6B35;color:#fff;font-size:30rpx;font-weight:bold;border:none;display:flex;align-items:center;justify-content:center;margin:20rpx auto;flex-shrink:0}
 .rbtn.on{background:#FF4D4F;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}

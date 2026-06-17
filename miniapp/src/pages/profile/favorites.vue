@@ -20,7 +20,7 @@ onShow(load)
 </script>
 
 <style scoped>
-.tbs{display:flex;margin-bottom:20rpx;gap:12rpx;width:100%}.tb{flex:1;text-align:center;padding:14rpx;font-size:26rpx;background:#f5f5f5;border-radius:32rpx}.tb.on{background:#FF6B35;color:#fff}
-.item{background:#fff;border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
+.tbs{display:flex;margin-bottom:20rpx;gap:12rpx;width:100%}.tb{flex:1;text-align:center;padding:14rpx;font-size:26rpx;background:var(--bg-secondary);border-radius:32rpx}.tb.on{background:#FF6B35;color:#fff}
+.item{background:var(--bg-card);border-radius:20rpx;padding:24rpx;margin-bottom:14rpx;width:100%;box-sizing:border-box;overflow:hidden}
 .it{font-size:28rpx;font-weight:bold;display:block}.id2{font-size:20rpx;color:#999;display:block;margin-top:6rpx}
 </style>

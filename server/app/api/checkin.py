@@ -1,17 +1,57 @@
 """
-打卡模块 — 今日任务 / 完成任务 / 日历 / 成长目标
+打卡模块 — 今日任务 / 完成任务 / 日历 / 成长目标 / 每日一句 / 推送模板ID
 """
 import random
+import logging
+from datetime import date, datetime
 from flask import Blueprint, request
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from ..extensions import db
 from ..models.user import User
 from ..models.checkin import DailyTaskConfig, CheckinRecord, GrowthGoalConfig
 from ..models.training import TrainingItem
+from ..models.admin import PushTemplate
 from ..utils import ok, fail
-from datetime import date, datetime
 
+logger = logging.getLogger(__name__)
 bp = Blueprint('checkin', __name__)
+
+# 每日一句缓存
+_cached_quote = None
+_quote_date = None
+
+
+def _get_daily_quote():
+    """获取每日一句（带日期缓存，快速返回）"""
+    global _cached_quote, _quote_date
+    today = date.today()
+    if _cached_quote and _quote_date == today:
+        return _cached_quote
+
+    # 降级默认值（始终可用）
+    _cached_quote = {
+        'content': '千里之行，始于足下。每天练习，成就更好的自己！',
+        'source': '每日金句'
+    }
+    _quote_date = today
+
+    # 异步获取远程名言（后台线程，不阻塞请求）
+    def _fetch_remote():
+        try:
+            from scheduler.sources.quotes import QuotesSource
+            source = QuotesSource({})
+            items = source.fetch()
+            if items:
+                _cached_quote['content'] = items[0].get('content', '')
+                _cached_quote['source'] = items[0].get('source_name', '')
+        except Exception:
+            pass
+
+    import threading
+    t = threading.Thread(target=_fetch_remote, daemon=True)
+    t.start()
+
+    return _cached_quote
 
 
 def _get_user():
@@ -24,7 +64,7 @@ def _get_user():
 
 @bp.route('/today', methods=['GET'])
 def get_today_status():
-    """获取今日打卡状态（含3个任务）"""
+    """获取今日打卡状态（含3个任务 + 每日一句）"""
     user = _get_user()
     today = date.today()
 
@@ -103,7 +143,8 @@ def get_today_status():
         'is_checked_in': len(completed_task_indices) > 0,
         'tasks': tasks,
         'all_completed': all_completed,
-        'stats': stats
+        'stats': stats,
+        'daily_quote': _get_daily_quote()
     })
 
 
@@ -175,6 +216,17 @@ def get_calendar():
         'days': days,
         'summary': {'total': len(days)}
     })
+
+
+@bp.route('/push-template-ids', methods=['GET'])
+def get_push_template_ids():
+    """返回需要用户授权的微信订阅消息模板ID列表"""
+    try:
+        tpls = PushTemplate.query.filter_by(is_active=True).all()
+        tmpl_ids = [t.wx_template_id for t in tpls if t.wx_template_id]
+        return ok({'tmpl_ids': tmpl_ids})
+    except Exception as e:
+        return ok({'tmpl_ids': []})
 
 
 @bp.route('/growth-progress', methods=['GET'])
