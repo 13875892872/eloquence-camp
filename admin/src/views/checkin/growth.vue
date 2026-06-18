@@ -27,7 +27,15 @@ const saving=ref(false),goals=ref([])
 const defaults=[{goal_level:'beginner',goal_name:'7天入门',required_days:7,reward_level:'中级',reward_extra_ai:1,badge_icon:'🏅',badge_name:'口才新星',is_active:true},{goal_level:'advanced',goal_name:'30天进阶',required_days:30,reward_level:'高级',reward_extra_ai:3,badge_icon:'🥈',badge_name:'表达达人',is_active:true},{goal_level:'expert',goal_name:'60天达人',required_days:60,reward_level:'大师',reward_extra_ai:5,badge_icon:'🥇',badge_name:'演讲大师',is_active:true},{goal_level:'master',goal_name:'100天大师',required_days:100,reward_level:'全解锁',reward_extra_ai:-1,badge_icon:'👑',badge_name:'口才王者',is_active:true}]
 
 async function load(){try{const d=await request.get('/admin/growth-config');goals.value=d.goals?.length?d.goals:defaults}catch(e){goals.value=defaults}}
-async function save(){saving.value=true;try{await request.put('/admin/growth-config',{goals:goals.value});ElMessage.success('成长目标已保存')}catch(e){ElMessage.success('成长目标已保存(演示模式)')}finally{saving.value=false}}
+async function save(){
+  saving.value=true
+  try{
+    await request.put('/admin/growth-config',{goals:goals.value})
+    ElMessage.success('成长目标已保存')
+  }catch(e){
+    ElMessage.error('成长目标保存失败')
+  }finally{saving.value=false}
+}
 onMounted(load)
 </script>
 

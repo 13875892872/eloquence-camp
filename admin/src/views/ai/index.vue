@@ -162,8 +162,12 @@ async function save(){
   const h=String(resetTime.value.getHours()).padStart(2,'0')
   const m=String(resetTime.value.getMinutes()).padStart(2,'0')
   f.reset_hour = h+':'+m
-  try{await request.put('/admin/ai-config',{...f});ElMessage.success('AI配置已保存')}
-  catch(e){ElMessage.success('AI配置已保存')}
+  try {
+    await request.put('/admin/ai-config', { ...f })
+    ElMessage.success('AI配置已保存')
+  } catch (e) {
+    ElMessage.error('AI配置保存失败')
+  }
   finally{saving.value=false}
 }
 onMounted(load)
@@ -180,6 +184,6 @@ onMounted(load)
 .weight-legend{display:flex;flex-direction:column;gap:6px;text-align:left}
 .legend-item{font-size:12px;color:#666;display:flex;align-items:center;gap:6px}
 .legend-item i{display:inline-block;width:10px;height:10px;border-radius:2px}
-.save-bar{position:fixed;bottom:0;left:220px;right:0;background:#fff;border-top:1px solid #eee;padding:14px 24px;display:flex;justify-content:flex-end;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,0.06)}
+.save-bar{position:fixed;bottom:0;left:var(--sidebar-width,220px);right:0;background:#fff;border-top:1px solid #eee;padding:14px 24px;display:flex;justify-content:flex-end;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,0.06);transition:left .3s}
 .save-btn{padding:12px 40px;font-size:16px}
 </style>

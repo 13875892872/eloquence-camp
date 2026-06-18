@@ -79,13 +79,22 @@ def evaluate():
 def synthesize_speech():
     """
     文字转语音（范本播放）
-    请求: { text, voice? }
-    返回: { audio_url }
+    请求: { text, voice?, training_item_id? }
+    返回: { audio_url, cached? }
     """
     data = request.get_json()
     text = data.get('text', '').strip()
     if not text:
         return fail(400, 'text 不能为空')
+
+    training_item_id = data.get('training_item_id')
+
+    # 如果传了 training_item_id，先检查是否已有范本音频（复用）
+    if training_item_id:
+        from ..models.training import TrainingItem
+        ti = TrainingItem.query.get(training_item_id)
+        if ti and ti.sample_audio_url:
+            return ok({'audio_url': ti.sample_audio_url, 'cached': True})
 
     voice = data.get('voice')  # 不传则使用 TTS 客户端默认音色 longanyang
 
@@ -96,4 +105,13 @@ def synthesize_speech():
 
     # 拼接完整 API 路径
     audio_url = f"/api/upload/{result['audio_url']}"
-    return ok({'audio_url': audio_url})
+
+    # 将生成的音频 URL 保存到训练题，下次直接复用
+    if training_item_id:
+        from ..models.training import TrainingItem
+        ti = TrainingItem.query.get(training_item_id)
+        if ti and not ti.sample_audio_url:
+            ti.sample_audio_url = audio_url
+            db.session.commit()
+
+    return ok({'audio_url': audio_url, 'cached': False})

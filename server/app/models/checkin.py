@@ -8,7 +8,7 @@ class CheckinRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     task_date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(20), default='completed')
+    status = db.Column(db.String(20), default='pending')
     completed_tasks = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

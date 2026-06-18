@@ -29,7 +29,15 @@ async function load(){
   try{const r=await request.get('/admin/training-items',{status:'online',page_size:100});items.value=r.items||[]}catch(e){}
 }
 async function search(kw){try{const r=await request.get('/admin/training-items',{keyword:kw,status:'online',page_size:50});items.value=r.items||[]}catch(e){}}
-async function save(){saving.value=true;try{await request.put('/admin/recommend-config',{slots:slots.value});ElMessage.success('推荐配置已保存')}catch(e){ElMessage.success('推荐配置已保存(演示模式)')}finally{saving.value=false}}
+async function save(){
+  saving.value=true
+  try{
+    await request.put('/admin/recommend-config',{slots:slots.value})
+    ElMessage.success('推荐配置已保存')
+  }catch(e){
+    ElMessage.error('推荐配置保存失败')
+  }finally{saving.value=false}
+}
 onMounted(load)
 </script>
 

@@ -172,3 +172,51 @@ def get_history_detail(record_id):
     """获取AI文案详情"""
     record = AiTextRecord.query.get_or_404(record_id)
     return ok(record.to_dict())
+
+
+SCENE_CATEGORY = {
+    'speech': 'speech',
+    'short_video': 'short_video',
+    'livestream': 'livestream',
+    'opening': 'speech',
+    'interview': 'interview',
+}
+
+
+@bp.route('/import-practice', methods=['POST'])
+def import_practice():
+    """将 AI 文案导入为个人练习素材"""
+    user_id = _get_user_id()
+    if not user_id:
+        return fail(401, '请先登录')
+
+    data = request.get_json() or {}
+    title = (data.get('title') or data.get('topic') or 'AI练习稿').strip()[:100]
+    content = (data.get('content') or '').strip()
+    if not content:
+        return fail(400, '文案内容不能为空')
+
+    scene_type = data.get('scene_type', 'speech')
+    category = SCENE_CATEGORY.get(scene_type, 'speech')
+
+    from ..models.training import TrainingItem
+    item = TrainingItem(
+        category=category,
+        sub_category='AI导入',
+        title=title,
+        difficulty=1,
+        sample_text=content[:3000],
+        tags=['AI导入', '自定义'],
+        status='online',
+        source='user_custom',
+        owner_user_id=user_id,
+        sort_order=9999,
+    )
+    db.session.add(item)
+    db.session.commit()
+
+    return ok({
+        'training_item_id': item.id,
+        'title': item.title,
+        'message': '已导入练习库',
+    })

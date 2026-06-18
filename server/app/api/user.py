@@ -1,6 +1,8 @@
 """用户模块 — 个人信息 / 收藏 / 练习历史"""
+from datetime import datetime, timedelta, date
 from flask import Blueprint, request
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
+from sqlalchemy import func
 from ..extensions import db
 from ..models.user import User
 from ..models.common import PracticeRecord, UserFavorite
@@ -9,6 +11,110 @@ from ..models.ai import AiTextRecord
 from ..utils import ok, fail, paginated
 
 bp = Blueprint('user', __name__)
+
+LEADERBOARD_LIMIT = 10
+LEADERBOARD_TYPES = {
+    'week_duration': {'label': '本周训练时长', 'unit': '分钟'},
+    'month_duration': {'label': '本月训练时长', 'unit': '分钟'},
+    'continuous_days': {'label': '连续训练天数', 'unit': '天'},
+}
+
+
+def _period_start(lb_type):
+    today = date.today()
+    if lb_type == 'week_duration':
+        monday = today - timedelta(days=today.weekday())
+        return datetime.combine(monday, datetime.min.time())
+    if lb_type == 'month_duration':
+        return datetime.combine(today.replace(day=1), datetime.min.time())
+    return None
+
+
+def _user_item(rank, user, value):
+    return {
+        'rank': rank,
+        'user_id': user.id,
+        'nickname': user.nickname or '微信用户',
+        'avatar_url': user.avatar_url,
+        'growth_level': user.growth_level,
+        'value': value,
+    }
+
+
+def _leaderboard_continuous():
+    users = User.query.filter(User.continuous_days > 0)\
+        .order_by(User.continuous_days.desc(), User.total_practice_minutes.desc())\
+        .limit(LEADERBOARD_LIMIT).all()
+    items = [_user_item(i + 1, u, u.continuous_days) for i, u in enumerate(users)]
+    return items, lambda u: u.continuous_days
+
+
+def _leaderboard_duration(lb_type):
+    start = _period_start(lb_type)
+    rows = db.session.query(
+        User,
+        func.coalesce(func.sum(PracticeRecord.duration), 0).label('total_seconds')
+    ).join(PracticeRecord, PracticeRecord.user_id == User.id)\
+     .filter(PracticeRecord.created_at >= start)\
+     .group_by(User.id)\
+     .having(func.sum(PracticeRecord.duration) > 0)\
+     .order_by(func.sum(PracticeRecord.duration).desc())\
+     .limit(LEADERBOARD_LIMIT).all()
+
+    items = [_user_item(i + 1, user, int(total_seconds or 0) // 60) for i, (user, total_seconds) in enumerate(rows)]
+
+    def value_fn(u):
+        total = db.session.query(func.coalesce(func.sum(PracticeRecord.duration), 0))\
+            .filter(PracticeRecord.user_id == u.id, PracticeRecord.created_at >= start).scalar()
+        return int(total or 0) // 60
+
+    return items, value_fn
+
+
+def _my_data(user, value):
+    return {
+        'user_id': user.id,
+        'nickname': user.nickname or '微信用户',
+        'avatar_url': user.avatar_url,
+        'growth_level': user.growth_level,
+        'value': value,
+    }
+
+
+def _calc_my_rank(user, items, lb_type, value_fn):
+    if not user:
+        return None, None
+    my_value = value_fn(user)
+    if my_value <= 0:
+        return None, None
+
+    for item in items:
+        if item['user_id'] == user.id:
+            return item['rank'], _my_data(user, my_value)
+
+    if lb_type == 'continuous_days':
+        higher = User.query.filter(
+            db.or_(
+                User.continuous_days > user.continuous_days,
+                db.and_(
+                    User.continuous_days == user.continuous_days,
+                    User.total_practice_minutes > user.total_practice_minutes
+                )
+            )
+        ).count()
+    else:
+        start = _period_start(lb_type)
+        my_total = db.session.query(func.coalesce(func.sum(PracticeRecord.duration), 0))\
+            .filter(PracticeRecord.user_id == user.id, PracticeRecord.created_at >= start).scalar() or 0
+        subq = db.session.query(
+            PracticeRecord.user_id,
+            func.sum(PracticeRecord.duration).label('total')
+        ).filter(PracticeRecord.created_at >= start)\
+         .group_by(PracticeRecord.user_id).subquery()
+        higher = db.session.query(func.count()).select_from(subq)\
+            .filter(subq.c.total > my_total).scalar() or 0
+
+    return higher + 1, _my_data(user, my_value)
 
 
 def _get_user():
@@ -138,23 +244,29 @@ def list_practices():
 
 @bp.route('/leaderboard', methods=['GET'])
 def leaderboard():
-    """训练排行榜"""
-    page = request.args.get('page', 1, type=int)
-    page_size = request.args.get('page_size', 50, type=int)
+    """训练排行榜 — 支持多维度，最多前10名"""
+    lb_type = request.args.get('type', 'week_duration')
+    if lb_type not in LEADERBOARD_TYPES:
+        return fail(400, '无效的排行榜类型')
+
     user = None
-    try: user = _get_user()
-    except: pass
+    try:
+        user = _get_user()
+    except Exception:
+        pass
 
-    query = User.query.filter(User.total_days > 0).order_by(User.continuous_days.desc(), User.total_practice_minutes.desc())
-    total = query.count()
-    users = query.offset((page - 1) * page_size).limit(page_size).all()
+    if lb_type == 'continuous_days':
+        items, value_fn = _leaderboard_continuous()
+    else:
+        items, value_fn = _leaderboard_duration(lb_type)
 
-    my_rank = None; my_data = None
-    if user and user.total_days > 0:
-        rank_q = User.query.filter(db.or_(User.continuous_days > user.continuous_days, db.and_(User.continuous_days == user.continuous_days, User.total_practice_minutes > user.total_practice_minutes))).count()
-        my_rank = rank_q + 1
-        my_data = {"nickname": user.nickname or "微信用户", "avatar_url": user.avatar_url, "continuous_days": user.continuous_days, "total_days": user.total_days, "total_practice_minutes": user.total_practice_minutes, "growth_level": user.growth_level}
-
-    items = [{"rank": (page-1)*page_size+idx+1, "nickname": u.nickname or "微信用户", "avatar_url": u.avatar_url, "continuous_days": u.continuous_days, "total_days": u.total_days, "total_practice_minutes": u.total_practice_minutes, "growth_level": u.growth_level} for idx, u in enumerate(users)]
-
-    return ok({"items": items, "pagination": {"page": page, "page_size": page_size, "total": total}, "my_rank": my_rank, "my_data": my_data})
+    my_rank, my_data = _calc_my_rank(user, items, lb_type, value_fn)
+    meta = LEADERBOARD_TYPES[lb_type]
+    return ok({
+        'type': lb_type,
+        'type_label': meta['label'],
+        'unit': meta['unit'],
+        'items': items,
+        'my_rank': my_rank,
+        'my_data': my_data,
+    })

@@ -18,7 +18,7 @@
       </el-row>
       <el-row :gutter="12" class="mt8">
         <el-col :span="8"><label class="fl">范本来源</label><el-select v-model="t.source_type" size="small" style="width:100%"><el-option label="随机抽取" value="random"/><el-option label="固定内容" value="fixed"/></el-select></el-col>
-        <el-col :span="6"><label class="fl">抽取分类</label><el-select v-model="t.source_category" size="small" style="width:100%"><el-option label="基础口才" value="basic"/><el-option label="演讲实战" value="speech"/><el-option label="直播话术" value="livestream"/><el-option label="即兴表达" value="improv"/></el-select></el-col>
+        <el-col :span="6"><label class="fl">抽取分类</label><el-select v-model="t.source_category" size="small" style="width:100%"><el-option label="基础口才" value="basic"/><el-option label="演讲实战" value="speech"/><el-option label="直播话术" value="livestream"/><el-option label="即兴表达" value="improv"/><el-option label="面试模拟" value="interview"/></el-select></el-col>
         <el-col :span="3"><label class="fl">难度低</label><el-select v-model="t.source_difficulty_min" size="small" style="width:100%"><el-option :value="1" label="⭐"/><el-option :value="2" label="⭐⭐"/><el-option :value="3" label="⭐⭐⭐"/></el-select></el-col>
         <el-col :span="3"><label class="fl">难度高</label><el-select v-model="t.source_difficulty_max" size="small" style="width:100%"><el-option :value="1" label="⭐"/><el-option :value="2" label="⭐⭐"/><el-option :value="3" label="⭐⭐⭐"/></el-select></el-col>
       </el-row>
@@ -36,7 +36,15 @@ const defaults={task_count:3,sequential_mode:true,tasks:[{task_index:1,title:'�
 const cfg=reactive(JSON.parse(JSON.stringify(defaults)))
 
 async function load(){try{const d=await request.get('/admin/checkin-config');if(d.tasks?.length)Object.assign(cfg,d)}catch(e){}}
-async function save(){saving.value=true;try{await request.put('/admin/checkin-config',{tasks:cfg.tasks,task_count:cfg.task_count,sequential_mode:cfg.sequential_mode});ElMessage.success('打卡配置已保存')}catch(e){ElMessage.success('打卡配置已保存(演示模式)')}finally{saving.value=false}}
+async function save(){
+  saving.value=true
+  try{
+    await request.put('/admin/checkin-config',{tasks:cfg.tasks,task_count:cfg.task_count,sequential_mode:cfg.sequential_mode})
+    ElMessage.success('打卡配置已保存')
+  }catch(e){
+    ElMessage.error('打卡配置保存失败')
+  }finally{saving.value=false}
+}
 onMounted(load)
 </script>
 

@@ -40,13 +40,46 @@
 import {ref,reactive,onMounted} from 'vue';import {ElMessage} from 'element-plus';import request from '@/api/request'
 const tpls=ref([]),pf=reactive({template_type:'new_material',title:'',content:'',target:'all'}),sending=ref(false),recs=ref([]),rl=ref(false),rp=ref(1),rt=ref(0)
 
-const defTpls=[{id:1,type:'daily_remind',name:'每日练习提醒',push_time:'20:00',is_active:true},{id:2,type:'checkin_success',name:'打卡成功通知',push_time:'',is_active:true},{id:3,type:'new_material',name:'新素材上线通知',push_time:'',is_active:false}]
-const defRecs=[{id:1,template_type:'daily_remind',title:'每日练习提醒',target_count:1023,reach_count:998,status:'success',created_at:'2026-06-16T20:00:00'},{id:2,template_type:'new_material',title:'新一波演讲素材上线啦！',target_count:1023,reach_count:987,status:'success',created_at:'2026-06-15T12:00:00'}]
-
-async function lt2(){try{tpls.value=(await request.get('/admin/push-templates')).templates||defTpls}catch(e){tpls.value=defTpls}}
-async function st(row){try{await request.put('/admin/push-templates/'+row.id,{...row})}catch(e){}ElMessage.success('模板已保存')}
-async function lr(){rl.value=true;try{const d=await request.get('/admin/push-records',{page:rp.value});recs.value=d.items?.length?d.items:defRecs;rt.value=d.pagination?.total||defRecs.length}catch(e){recs.value=defRecs;rt.value=defRecs.length}rl.value=false}
-async function sp(){if(!pf.title)return ElMessage.warning('请输入推送标题');sending.value=true;try{await request.post('/admin/push/manual',{...pf});ElMessage.success('推送成功');pf.title='';pf.content='';lr()}catch(e){ElMessage.success('推送已发送(演示模式)');pf.title='';pf.content=''}finally{sending.value=false}}
+async function lt2(){
+  try{
+    tpls.value=(await request.get('/admin/push-templates')).templates||[]
+  }catch(e){
+    tpls.value=[]
+  }
+}
+async function st(row){
+  try{
+    await request.put('/admin/push-templates/'+row.id,{...row})
+    ElMessage.success('模板已保存')
+  }catch(e){
+    ElMessage.error('模板保存失败')
+  }
+}
+async function lr(){
+  rl.value=true
+  try{
+    const d=await request.get('/admin/push-records',{page:rp.value})
+    recs.value=d.items||[]
+    rt.value=d.pagination?.total||0
+  }catch(e){
+    recs.value=[]
+    rt.value=0
+  }
+  rl.value=false
+}
+async function sp(){
+  if(!pf.title)return ElMessage.warning('请输入推送标题')
+  sending.value=true
+  try{
+    await request.post('/admin/push/manual',{...pf})
+    ElMessage.success('推送成功')
+    pf.title=''
+    pf.content=''
+    lr()
+  }catch(e){
+    ElMessage.error('推送失败')
+  }finally{sending.value=false}
+}
 onMounted(()=>{lt2();lr()})
 </script>
 

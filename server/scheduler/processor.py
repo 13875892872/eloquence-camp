@@ -18,7 +18,7 @@ PROCESS_PROMPT = """你是一位专业口才训练内容编辑。你的任务是
 
 请完成以下转化：
 
-1. category（4选1）：basic（朗读/发音）、speech（演讲/致辞）、live（直播/带货）、improv（即兴/辩论/故事）
+1. category（5选1）：basic（朗读/发音）、speech（演讲/致辞）、livestream（直播/带货）、improv（即兴/辩论/故事）、interview（求职/面试）
 2. sub_category：细分类型，如：新闻朗读、观点评述、带货话术、诗词诵读、故事讲述
 3. title：吸引人的练习标题（10-20字）
 4. sample_text：改写为适合大声朗读的口才练习文本：
@@ -35,7 +35,7 @@ PROCESS_PROMPT = """你是一位专业口才训练内容编辑。你的任务是
 class Processor:
     """Qwen AI 素材处理器"""
 
-    VALID_CATEGORIES = {'basic', 'speech', 'live', 'improv'}
+    VALID_CATEGORIES = {'basic', 'speech', 'livestream', 'live', 'improv', 'interview', 'short_video', 'student'}
 
     def __init__(self, config: dict):
         self.model = config.get('qwen_model', 'qwen-plus')
@@ -115,6 +115,8 @@ class Processor:
 
         # 清理和验证
         category = data['category'].strip().lower()
+        if category == 'live':
+            category = 'livestream'
         if category not in self.VALID_CATEGORIES:
             category = 'basic'
 

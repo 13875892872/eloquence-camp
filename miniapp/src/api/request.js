@@ -2,13 +2,13 @@
  * uni.request 封装 — 自动注入Token / 统一错误处理
  */
 // #ifdef MP-WEIXIN
-const BASE_URL = 'http://192.168.1.107:5000/api'
+const BASE_URL = 'http://192.168.1.234:5000/api'
 // #endif
 
 // #ifndef MP-WEIXIN
 const BASE_URL = 'https://api.your-domain.com/api'
 // #endif
-const TIMEOUT = 15000
+const TIMEOUT = 8000
 
 function request(options = {}) {
   return new Promise((resolve, reject) => {
@@ -43,6 +43,7 @@ function request(options = {}) {
         }
       },
       fail: (err) => {
+        console.error('[api] request fail', options.url, err)
         uni.showToast({ title: '网络连接失败', icon: 'none' })
         reject(err)
       }

@@ -1,7 +1,5 @@
 <template>
-<div class="page">
   <el-card shadow="never" class="set-card">
-    <template #header><div class="card-hd"><span>🔐 修改管理员密码</span></div></template>
     <el-form :model="pwd" label-width="100px" size="default" class="pwd-form">
       <el-form-item label="旧密码">
         <el-input v-model="pwd.old" type="password" show-password placeholder="请输入旧密码"/>
@@ -17,25 +15,36 @@
       </el-form-item>
     </el-form>
   </el-card>
-</div>
 </template>
 
 <script setup>
-import {reactive,ref} from 'vue';import {ElMessage} from 'element-plus';import request from '@/api/request'
-const pwd=reactive({old:'',n1:'',n2:''}),ps=ref(false)
-async function cp(){
-  if(!pwd.old||!pwd.n1)return ElMessage.warning('请填写密码')
-  if(pwd.n1.length<6)return ElMessage.warning('新密码至少6位')
-  if(pwd.n1!==pwd.n2)return ElMessage.warning('两次新密码不一致')
-  ps.value=true
-  try{await request.put('/admin/change-password',{old_password:pwd.old,new_password:pwd.n1})
-    ElMessage.success('密码修改成功');pwd.old='';pwd.n1='';pwd.n2=''
-  }catch(e){ElMessage.success('密码已修改')}
-  finally{ps.value=false}
+import { reactive, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import request from '@/api/request'
+
+const pwd = reactive({ old: '', n1: '', n2: '' })
+const ps = ref(false)
+
+async function cp() {
+  if (!pwd.old || !pwd.n1) return ElMessage.warning('请填写密码')
+  if (pwd.n1.length < 6) return ElMessage.warning('新密码至少6位')
+  if (pwd.n1 !== pwd.n2) return ElMessage.warning('两次新密码不一致')
+  ps.value = true
+  try {
+    await request.put('/admin/change-password', { old_password: pwd.old, new_password: pwd.n1 })
+    ElMessage.success('密码修改成功')
+    pwd.old = ''
+    pwd.n1 = ''
+    pwd.n2 = ''
+  } catch (e) {
+    ElMessage.error('密码修改失败')
+  } finally {
+    ps.value = false
+  }
 }
 </script>
 
 <style scoped>
-.page{padding:0}.set-card{border-radius:10px}.card-hd{font-weight:600}
-.pwd-form{max-width:440px;padding-top:8px}
+.set-card { border-radius: var(--card-radius); }
+.pwd-form { max-width: 440px; padding-top: 8px; }
 </style>

@@ -1,3 +1,5 @@
+@import './variables.scss';
+
 * {
   margin: 0;
   padding: 0;
@@ -9,15 +11,79 @@ html, body, #app {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   font-size: 14px;
-  color: #1A1A1A;
-  background: #F0F2F5;
+  color: var(--text-primary);
+  background: var(--page-bg);
 }
 
-// 滚动条
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #dcdfe6; border-radius: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 
-// Element Plus 覆盖
-.el-card { margin-bottom: 16px; }
-.el-table { font-size: 13px; }
+// 卡片：细边框、无重阴影
+.el-card {
+  margin-bottom: 16px;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  --el-card-border-color: var(--border-color);
+}
+.el-card__header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+// 表格
+.el-table {
+  font-size: 13px;
+  --el-table-border-color: var(--border-light);
+  --el-table-header-bg-color: #fafafa;
+  --el-table-header-text-color: var(--text-primary);
+}
+.el-table th.el-table__cell {
+  font-weight: 600;
+  background: #fafafa !important;
+}
+.el-table .el-button.is-link {
+  padding: 0 4px;
+  height: auto;
+}
+
+// 表单控件
+.el-input__wrapper,
+.el-select__wrapper {
+  border-radius: var(--card-radius);
+}
+
+// 标签
+.el-tag {
+  border-radius: 4px;
+}
+.el-tag--success {
+  --el-tag-bg-color: #f0f9eb;
+  --el-tag-border-color: #e1f3d8;
+  --el-tag-text-color: #67c23a;
+}
+.el-tag--warning {
+  --el-tag-bg-color: #fdf6ec;
+  --el-tag-border-color: #faecd8;
+  --el-tag-text-color: #e6a23c;
+}
+.el-tag--info {
+  --el-tag-bg-color: #f4f4f5;
+  --el-tag-border-color: #e9e9eb;
+  --el-tag-text-color: #909399;
+}
+
+// 分页
+.el-pagination {
+  --el-pagination-button-bg-color: #fff;
+}
+
+.page-wrap {
+  padding: 0;
+}
+
+.mb16 { margin-bottom: 16px; }
+.mt16 { margin-top: 16px; }

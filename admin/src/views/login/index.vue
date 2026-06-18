@@ -1,15 +1,24 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h1 class="login-title">🎤 口才训练营</h1>
-      <p class="login-subtitle">后台管理系统</p>
+      <div class="login-brand">
+        <span class="login-logo">🎤</span>
+        <h1 class="login-title">口才训练营</h1>
+        <p class="login-subtitle">后台管理系统</p>
+      </div>
       <el-form ref="formRef" :model="form" :rules="rules" size="large">
         <el-form-item prop="username">
           <el-input v-model="form.username" placeholder="请输入账号" prefix-icon="User" />
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码"
-            prefix-icon="Lock" show-password @keyup.enter="handleLogin" />
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="请输入密码"
+            prefix-icon="Lock"
+            show-password
+            @keyup.enter="handleLogin"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="loading" class="login-btn" @click="handleLogin">
@@ -33,12 +42,12 @@ const loading = ref(false)
 
 const form = reactive({
   username: '',
-  password: ''
+  password: '',
 })
 
 const rules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 
 async function handleLogin() {
@@ -49,7 +58,7 @@ async function handleLogin() {
   try {
     const data = await request.post('/admin/login', {
       username: form.username,
-      password: form.password
+      password: form.password,
     })
     localStorage.setItem('admin_token', data.token)
     localStorage.setItem('admin_info', JSON.stringify(data.admin))
@@ -70,26 +79,40 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--page-bg);
 }
 .login-card {
   width: 400px;
-  padding: 48px 40px;
+  padding: 40px 40px 48px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+.login-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-logo {
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--el-color-primary-light-9);
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 .login-title {
-  text-align: center;
-  font-size: 28px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 4px;
-  color: #1a1a1a;
 }
 .login-subtitle {
-  text-align: center;
   font-size: 14px;
-  color: #999;
-  margin-bottom: 32px;
+  color: var(--text-muted);
 }
 .login-btn {
   width: 100%;

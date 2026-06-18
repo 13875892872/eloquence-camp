@@ -5,4 +5,4 @@ from flask import Blueprint
 
 admin_bp = Blueprint('admin', __name__)
 
-from . import dashboard, training, checkin, ai_config, user, push  # noqa
+from . import dashboard, training, checkin, ai_config, user, push, settings  # noqa

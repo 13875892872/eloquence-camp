@@ -13,7 +13,7 @@ from app.models.user import User, UserQuota
 
 app = create_app()
 
-# ── 训练题库（24题，4个分类 x 6题） ──
+# ── 训练题库（30题，5个分类 x 6题） ──
 TRAINING_ITEMS = [
     # ===== 基础口才 (basic) =====
     {'category': 'basic', 'sub_category': '朗读', 'title': '晨间新闻跟读',
@@ -55,23 +55,23 @@ TRAINING_ITEMS = [
      'difficulty': 5, 'sort_order': 6, 'tags': ['TED', '分享', '高阶'],
      'sample_text': '今天我想和大家探讨一个话题：语言的力量。你知道吗？一个人平均每天要说大约一万六千个字。这些词汇不仅仅是在传递信息，它们还在塑造我们的思维、影响他人的情绪、改变我们所处的环境。心理学研究表明，正向的语言暗示可以改变一个人的行为模式。所以从今天开始，让我们重新审视自己说的每一句话，用语言去创造而非破坏，去鼓励而非打击，去连接而非隔离。'},
 
-    # ===== 直播话术 (live) =====
-    {'category': 'live', 'sub_category': '带货', 'title': '产品卖点介绍',
+    # ===== 直播话术 (livestream) =====
+    {'category': 'livestream', 'sub_category': '带货', 'title': '产品卖点介绍',
      'difficulty': 2, 'sort_order': 1, 'tags': ['带货', '销售', '产品'],
      'sample_text': '家人们，今天给大家带来一款真正好用的蓝牙耳机。第一，它采用了最新的降噪技术，在地铁上也能清晰通话；第二，续航长达36小时，出差一周不用充电；第三，佩戴舒适度极高，入耳设计符合人体工学，戴一天耳朵也不疼。这款耳机原价399，今天直播间只要199，而且还送价值99的保护套。数量有限，需要的家人们抓紧下单！'},
-    {'category': 'live', 'sub_category': '带货', 'title': '限时秒杀话术',
+    {'category': 'livestream', 'sub_category': '带货', 'title': '限时秒杀话术',
      'difficulty': 3, 'sort_order': 2, 'tags': ['秒杀', '节奏', '促销'],
      'sample_text': '倒计时开始！321，上链接！家人们这款面膜今天破价了，平时109一盒，今天三盒只要159！三盒只要159！库存只有200组，卖完真的补不了货。我跟品牌方磨了整整一个星期才拿下这个价格，错过今天就没有了。已经拍了350单了，还有最后50组！手慢无，手慢无！'},
-    {'category': 'live', 'sub_category': '互动', 'title': '粉丝互动控场',
+    {'category': 'livestream', 'sub_category': '互动', 'title': '粉丝互动控场',
      'difficulty': 2, 'sort_order': 3, 'tags': ['互动', '控场', '气氛'],
      'sample_text': '欢迎新进来的宝宝们！没点关注的左上角点个关注，加个粉丝团不迷路。今天直播间人气不错啊，已经有2000人在线了。大家飘个弹幕告诉我你们是从哪里刷到我的，我看看有多少是老粉。飘"1"让我看到你们！好，看到好多熟悉的面孔了。今天我们还准备了福袋，关注+点赞+评论就能参与抽奖。'},
-    {'category': 'live', 'sub_category': '知识', 'title': '知识付费讲解',
+    {'category': 'livestream', 'sub_category': '知识', 'title': '知识付费讲解',
      'difficulty': 3, 'sort_order': 4, 'tags': ['知识', '教育', '课程'],
      'sample_text': '大家好，欢迎来到今天的直播课。今天我们要讲的主题是"高效学习法"。很多同学问我说老师，为什么我每天学习那么久，效果却不理想？其实问题的关键不在于时间长短，而在于学习方法。今天我会分享三个核心方法：番茄工作法、费曼学习法和间隔重复法。学会这三个方法，你的学习效率至少提升三倍。'},
-    {'category': 'live', 'sub_category': '娱乐', 'title': '才艺展示串词',
+    {'category': 'livestream', 'sub_category': '娱乐', 'title': '才艺展示串词',
      'difficulty': 2, 'sort_order': 5, 'tags': ['才艺', '娱乐', '暖场'],
      'sample_text': '来了来了，家人们期待已久的才艺环节到了！我先声明一下，我唱歌的水平嘛，属于那种"勇气可嘉、水平一般"的类型。但是答应了大家的事情一定做到。今天给大家唱一首《起风了》，希望你们喜欢。如果唱得不好，大家轻点喷哈～来，音乐老师请就位，321，走！'},
-    {'category': 'live', 'sub_category': '危机', 'title': '直播应急回应',
+    {'category': 'livestream', 'sub_category': '危机', 'title': '直播应急回应',
      'difficulty': 4, 'sort_order': 6, 'tags': ['危机', '应对', '灵活'],
      'sample_text': '我看到有朋友在弹幕里提到了昨天的一个负面评论。首先要感谢这位朋友关注我们，也给了我一个说明的机会。关于产品规格的问题，确实是我们展示时没有标注清楚，这点我们团队已经意识到并正在改进。我们已经在商品详情页更新了所有规格信息。如果已经下单的朋友对规格有疑问，可以联系客服，七天无理由退换。做直播我们一直在学习，感谢大家的包容和监督。'},
 
@@ -94,6 +94,26 @@ TRAINING_ITEMS = [
     {'category': 'improv', 'sub_category': '情感', 'title': '真诚感谢表达',
      'difficulty': 2, 'sort_order': 6, 'tags': ['感谢', '情感', '温暖'],
      'sample_text': '今天我想认真地说一声感谢。感谢父母，你们的支持是我前行的底气；感谢身边的朋友，在我低谷时给我力量；感谢工作中遇到的每一位同事和导师，是你们让我不断成长。很多时候我们把感谢放在心上，却忘了开口说出来。所以今天，试着给你想感谢的人发一条消息吧，哪怕只是一句"谢谢你"。表达的温暖，永远不嫌晚。'},
+
+    # ===== 面试模拟 (interview) =====
+    {'category': 'interview', 'sub_category': '自我介绍', 'title': '一分钟自我介绍',
+     'difficulty': 1, 'sort_order': 1, 'tags': ['自我介绍', '面试', '入门'],
+     'sample_text': '面试官您好，我叫张明，毕业于XX大学计算机专业，有三年产品经理经验。我擅长用户需求分析和跨部门协作，曾主导两款核心产品从0到1上线。我性格沉稳、逻辑清晰，善于在压力下推进项目。选择贵公司，是因为我非常认同你们"用户第一"的产品理念。希望能有机会加入团队，为产品增长贡献我的力量。谢谢！'},
+    {'category': 'interview', 'sub_category': '经典问题', 'title': '你的优缺点是什么',
+     'difficulty': 2, 'sort_order': 2, 'tags': ['优缺点', '经典题', '面试'],
+     'sample_text': '关于优点，我认为自己学习能力强、执行力高。比如去年接手一个新领域项目，我在两周内快速补齐业务知识，并按时交付了方案。关于缺点，我过去有时过于追求完美，会在细节上花费较多时间。现在我学会了设定优先级，先保证核心目标完成，再迭代优化细节。这个调整让我的工作效率提升了约30%。'},
+    {'category': 'interview', 'sub_category': '行为面试', 'title': 'STAR法回答项目经历',
+     'difficulty': 3, 'sort_order': 3, 'tags': ['STAR', '项目经历', '行为面试'],
+     'sample_text': '我分享一个解决用户流失问题的经历。背景是某功能上线后次月留存下降15%。我的任务是找出原因并制定方案。我通过数据分析发现，新用户在前三天未完成关键操作。我推动优化了新手引导流程，并增加了关键节点的推送提醒。结果是一个月内新用户7日留存提升了12%，该方案也被推广到其他产品线。'},
+    {'category': 'interview', 'sub_category': '沟通', 'title': '如何回答期望薪资',
+     'difficulty': 3, 'sort_order': 4, 'tags': ['薪资', '谈判', '面试'],
+     'sample_text': '关于期望薪资，我前期做了市场调研，结合我的经验和贵司岗位要求，我的期望范围是XX到XX。当然，薪资不是我唯一的考量因素，我更看重平台的发展空间、团队氛围以及成长机会。如果岗位匹配度高，我在薪资方面也有一定弹性，希望我们可以综合评估后找到一个双方都满意的方案。'},
+    {'category': 'interview', 'sub_category': '经典问题', 'title': '为什么离开上一家公司',
+     'difficulty': 2, 'sort_order': 5, 'tags': ['离职原因', '经典题', '面试'],
+     'sample_text': '我在上一家公司工作了三年，收获很多，也完成了多个重要项目。选择离开，主要是因为我希望在更大的平台上承担更多责任，接触更复杂的业务场景。上一家公司的业务已经相对成熟，我的成长空间遇到了瓶颈。贵公司在行业内的领先地位和清晰的发展战略，正是我下一阶段想要挑战的方向。'},
+    {'category': 'interview', 'sub_category': '压力面试', 'title': '压力面试应对话术',
+     'difficulty': 4, 'sort_order': 6, 'tags': ['压力面试', '应对', '高阶'],
+     'sample_text': '如果面试官质疑"你的经验似乎不够"，我会这样回应：感谢您的直接反馈。确实，在某些特定领域我的经验还在积累中，但我有快速学习和拿结果的能力。比如之前我从零进入一个新行业，三个月内就成为了团队核心成员。我相信能力不完全等于年限，更在于解决问题的思路和学习速度。如果给我机会，我愿意用实际表现来证明。'},
 ]
 
 # ── 推荐配置 ──
@@ -237,6 +257,17 @@ def main():
         else:
             print(f'ℹ️  训练题库已有 {existing_count} 题，跳过')
 
+        # 补全新增分类（如 interview）
+        existing_titles = {t.title for t in TrainingItem.query.all()}
+        added = 0
+        for item in TRAINING_ITEMS:
+            if item['title'] not in existing_titles:
+                db.session.add(TrainingItem(**item))
+                added += 1
+        if added:
+            db.session.commit()
+            print(f'✅ 补全训练题库 {added} 题')
+
         # 2. 推荐配置
         if RecommendConfig.query.count() == 0:
             all_items = TrainingItem.query.all()
@@ -244,7 +275,7 @@ def main():
                 candidates = [it for it in all_items
                              if slot_conf['slot'] == 1 and it.category == 'basic'
                              or slot_conf['slot'] == 2 and it.category == 'improv'
-                             or slot_conf['slot'] == 3 and it.category == 'live']
+                             or slot_conf['slot'] == 3 and it.category == 'livestream']
                 item = candidates[slot_conf['slot'] - 1] if candidates else all_items[slot_conf['slot']]
                 db.session.add(RecommendConfig(
                     slot=slot_conf['slot'],

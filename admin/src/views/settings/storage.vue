@@ -1,5 +1,5 @@
 <template>
-<div class="page">
+  <div>
   <el-card shadow="never" class="set-card">
     <template #header><div class="card-hd"><span>💾 录音存储概览</span></div></template>
     <el-row :gutter="16">
@@ -31,7 +31,7 @@
 
 <script setup>
 const stats = [
-  {label:'OSS 总存储',value:'12.5 GB',color:'#FF6B35'},
+  {label:'OSS 总存储',value:'12.5 GB',color:'var(--brand-primary)'},
   {label:'总录音文件',value:'8,432 个',color:'#1890FF'},
   {label:'近30天新增',value:'1,234 个',color:'#52C41A'},
 ]

@@ -1,10 +1,19 @@
 """后台管理 — 素材管理（训练题库 + 推荐位）"""
 from flask import request
+from flask_jwt_extended import get_jwt_identity
 from . import admin_bp
 from ...extensions import db
 from ...models.training import TrainingItem
 from ...models.common import RecommendConfig
+from ...services.admin_log import log_operation
 from ...utils import ok, fail, paginated
+
+
+def _admin_id():
+    identity = get_jwt_identity()
+    if isinstance(identity, dict):
+        return identity.get('admin_id')
+    return None
 
 
 # ==================== 训练题库 CRUD ====================
@@ -70,6 +79,8 @@ def create_training_item():
     )
     db.session.add(item)
     db.session.commit()
+    log_operation(_admin_id(), '新增素材', '训练题库', item.id, {'title': item.title})
+    db.session.commit()
     return ok(item.to_dict())
 
 
@@ -89,6 +100,8 @@ def update_training_item(item_id):
     if 'source' in data: item.source = data['source']
     if 'status' in data: item.status = data['status']
 
+    db.session.commit()
+    log_operation(_admin_id(), '编辑素材', '训练题库', item.id, {'title': item.title})
     db.session.commit()
     return ok(item.to_dict())
 
